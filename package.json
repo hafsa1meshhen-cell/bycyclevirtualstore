@@ -1,0 +1,21 @@
+{
+  "name": "velo-vr",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "VELO VR – an immersive WebXR bicycle showroom built with Vite + Three.js",
+  "scripts": {
+    "generate": "node scripts/generate-products.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "dev:vr": "vite --mode vr"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
+    "vite": "5.4.11"
+  }
+}

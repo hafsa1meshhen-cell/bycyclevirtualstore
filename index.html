@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0910" />
+    <meta name="description" content="VELO VR – an immersive virtual reality bicycle showroom. Explore 30 premium road and mountain bikes in 3D, on mobile or in VR." />
+    <title>VELO VR · Virtual Bicycle Showroom</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='18' cy='40' r='12' fill='none' stroke='%23e8b65a' stroke-width='5'/%3E%3Ccircle cx='46' cy='40' r='12' fill='none' stroke='%23e8b65a' stroke-width='5'/%3E%3Cpath d='M18 40 28 22h14l4 18M28 22l8 18' fill='none' stroke='%23e8b65a' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage" aria-label="3D bicycle showroom"></div>
+      <div id="crosshair" aria-hidden="true"></div>
+
+      <!-- ========== TOP BAR ========== -->
+      <header class="topbar glass" id="topbar">
+        <a class="logo" href="#" aria-label="VELO VR home">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="40" r="12"/><circle cx="46" cy="40" r="12"/><path d="M18 40 28 22h14l4 18M28 22l8 18"/></svg>
+          <span>VELO<b>VR</b></span>
+        </a>
+
+        <button class="icon-btn only-mobile" id="filtersToggle" aria-expanded="false" aria-controls="tbFilters" aria-label="Show filters">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        </button>
+
+        <div class="tb-filters" id="tbFilters">
+          <div class="seg" role="radiogroup" aria-label="Category">
+            <button role="radio" aria-checked="true" data-cat="all">All</button>
+            <button role="radio" aria-checked="false" data-cat="road">Road</button>
+            <button role="radio" aria-checked="false" data-cat="mountain">Mountain</button>
+          </div>
+
+          <label class="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="searchInput" type="search" placeholder="Search bikes…" aria-label="Search bikes" autocomplete="off" />
+          </label>
+
+          <div class="price-range" aria-label="Price range">
+            <div class="pr-label"><span>Price</span><output id="priceOut">AED 8k – 45k</output></div>
+            <div class="pr-track" id="priceTrack">
+              <input type="range" id="priceMin" aria-label="Minimum price" />
+              <input type="range" id="priceMax" aria-label="Maximum price" />
+            </div>
+          </div>
+
+          <label class="select">
+            <span class="sr-only">Sort by</span>
+            <select id="sortSelect" aria-label="Sort by">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: low → high</option>
+              <option value="price-desc">Price: high → low</option>
+              <option value="name-asc">Name: A → Z</option>
+              <option value="name-desc">Name: Z → A</option>
+            </select>
+          </label>
+
+          <button class="chip" id="wishFilter" aria-pressed="false" title="Show wishlist only">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5C19 15.6 12 20 12 20z"/></svg>
+            <span>Wishlist</span><span class="count" id="wishCount">0</span>
+          </button>
+        </div>
+
+        <div class="tb-actions">
+          <button class="btn-ghost" id="galleryToggle" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            <span class="lbl">2D Gallery</span>
+          </button>
+          <button class="btn-ghost vr-only" id="vrTopBtn" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h18v9h-6l-2-3h-2l-2 3H3z"/></svg>
+            <span class="lbl">Enter VR</span>
+          </button>
+          <button class="icon-btn" id="muteBtn" aria-pressed="false" aria-label="Mute sound">
+            <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+            <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
+          </button>
+          <button class="icon-btn cart-btn" id="cartBtn" aria-label="Open cart, 0 items">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg>
+            <span class="badge" id="cartBadge" hidden>0</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ========== HUD ========== -->
+      <div class="minimap glass" id="minimap">
+        <div class="mm-head"><span>ROAD</span><span>ATRIUM</span><span>MOUNTAIN</span></div>
+        <canvas id="minimapCanvas" width="440" height="150" aria-label="Mini-map. Click to teleport."></canvas>
+      </div>
+      <div class="hint glass" id="hint" hidden></div>
+      <div class="joystick" id="joystick" hidden aria-hidden="true"><div class="knob"></div></div>
+      <div class="ride-banner glass" id="rideBanner" hidden>
+        <span class="dot"></span> <span>TEST RIDE</span> <em id="rideName"></em>
+        <button class="btn-ghost sm" id="rideSkip">Skip</button>
+      </div>
+      <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+      <!-- ========== LOADER ========== -->
+      <div class="loader" id="loader">
+        <div class="loader-bg"></div>
+        <div class="loader-inner">
+          <div class="loader-logo">
+            <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="40" r="12"/><circle cx="46" cy="40" r="12"/><path d="M18 40 28 22h14l4 18M28 22l8 18"/></svg>
+            <h1>VELO<b>VR</b></h1>
+          </div>
+          <p class="tagline">The virtual reality bicycle showroom</p>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading showroom">
+            <div class="bar" id="loaderBar"></div>
+          </div>
+          <p class="loader-status" id="loaderStatus">Preparing the showroom… 0%</p>
+          <div class="loader-actions">
+            <button class="btn-primary" id="enterBtn" disabled>ENTER SHOWROOM</button>
+            <button class="btn-outline" id="enterVrBtn" hidden>ENTER VR</button>
+          </div>
+          <button class="link-btn" id="enterGalleryBtn">or browse the 2D gallery</button>
+          <ul class="controls-help">
+            <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move · <kbd>Shift</kbd> run · mouse look</li>
+            <li>Click a bike to view · <kbd>Esc</kbd> release mouse</li>
+            <li>Mobile: drag to look, joystick to move, tap a bike</li>
+            <li>VR: point &amp; trigger · thumbstick to turn &amp; teleport</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="vrButtonHost" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
